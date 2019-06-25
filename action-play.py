@@ -18,7 +18,11 @@ def intent_received(hermes, intent_message):
     pid = None
     pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
 
-    print("pid: "+pid )
+    fpid = open("/tmp/mplayer-id", "w")
+    fpid.write(pid)
+    fpid.close()
+
+    print("pid: " + str(pid))
 
 
 with Hermes(MQTT_ADDR) as h:
