@@ -34,17 +34,26 @@ def action_wrapper(hermes, intentMessage, conf):
     current_session_id = intentMessage.session_id
     hermes.publish_end_session(current_session_id, "")
 
-    subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
+    if intentMessage.intent.intent_name == 'duch:play':
 
-    pid = None
-    pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
+        subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
 
-    fpid = open("/tmp/mplayer-id", "w+")
-    fpid.write(str(pid))
-    fpid.close()
+        pid = None
+        pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
 
-    print("pid: " + str(pid))
+        fpid = open("/tmp/mplayer-id", "w+")
+        fpid.write(str(pid))
+        fpid.close()
 
+        print("pid: " + str(pid))
+
+    elif intentMessage.intent.intent_name == 'duch:stop':
+
+        fpid = open("/tmp/mplayer-id", "r")
+        pid = fpid.read()
+        fpid.close()
+
+        subprocess.Popen.kill(int(pid))
 
 if __name__ == "__main__":
     mqtt_opts = MqttOptions()
