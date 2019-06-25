@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from hermes_python.hermes import Hermes
-import os
+import subprocess
 
 MQTT_IP_ADDR = "localhost"
 MQTT_PORT = 1883
@@ -14,7 +14,7 @@ def intent_received(hermes, intent_message):
     pid = fpid.read()
     fpid.close()
 
-    os.kill(int(pid), 15)
+    subprocess.Popen.kill(int(pid))
 
 with Hermes(MQTT_ADDR) as h:
     h.subscribe_intents(intent_received).start()
