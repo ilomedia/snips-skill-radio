@@ -40,7 +40,7 @@ def action_wrapper(hermes, intentMessage, conf):
     pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
 
     fpid = open("/tmp/mplayer-id", "w+")
-    fpid.write(pid)
+    fpid.write(str(pid))
     fpid.close()
 
     print("pid: " + str(pid))
