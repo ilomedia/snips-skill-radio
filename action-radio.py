@@ -6,10 +6,12 @@ from hermes_python.hermes import Hermes
 from hermes_python.ffi.utils import MqttOptions
 from hermes_python.ontology import *
 import io
+import os
 import subprocess
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
+
 
 class SnipsConfigParser(ConfigParser.SafeConfigParser):
     def to_dict(self):
@@ -25,16 +27,18 @@ def read_configuration_file(configuration_file):
     except (IOError, ConfigParser.Error) as e:
         return dict()
 
-def subscribe_intent_callback(hermes, intentMessage):
+
+def subscribe_intent_callback(hermes, intent_message):
+
     conf = read_configuration_file(CONFIG_INI)
-    action_wrapper(hermes, intentMessage, conf)
+    action_wrapper(hermes, intent_message, conf)
 
 
-def action_wrapper(hermes, intentMessage, conf):
+def action_wrapper(hermes, intent_message, conf):
 
-    hermes.publish_end_session(intentMessage.session_id, "")
+    hermes.publish_end_session(intent_message.session_id, "")
 
-    if intentMessage.intent.intent_name == 'duch:play':
+    if intent_message.intent.intent_name == 'duch:play':
 
         subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
 
@@ -47,13 +51,14 @@ def action_wrapper(hermes, intentMessage, conf):
 
         print("pid: " + str(pid))
 
-    elif intentMessage.intent.intent_name == 'duch:stop':
+    elif intent_message.intent.intent_name == 'duch:stop':
 
         fpid = open("/tmp/mplayer-id", "r")
         pid = fpid.read()
         fpid.close()
 
-        subprocess.Popen.kill(int(pid))
+        os.kill(int(pid), 15)
+
 
 if __name__ == "__main__":
     mqtt_opts = MqttOptions()
