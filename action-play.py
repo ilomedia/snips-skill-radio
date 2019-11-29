@@ -7,6 +7,7 @@ from hermes_python.ffi.utils import MqttOptions
 from hermes_python.ontology import *
 import io
 import subprocess
+import playsound
 
 CONFIGURATION_ENCODING_FORMAT = "utf-8"
 CONFIG_INI = "config.ini"
@@ -40,16 +41,18 @@ def action_wrapper(hermes, intentMessage, conf):
 
     hermes.publish_end_session(intentMessage.session_id, "")
 
-    subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
+    playsound.playsound('http://direct.franceinter.fr/live/franceinter-midfi.mp3', False)
 
-    pid = None
-    pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
-
-    fpid = open("/tmp/mplayer-id", "w+")
-    fpid.write(str(pid))
-    fpid.close()
-
-    print("pid: " + str(pid))
+    # subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
+    #
+    # pid = None
+    # pid = subprocess.Popen(['mplayer', '-quiet', 'http://rai.ice.infomaniak.ch/rai-64.aac?type=.flv']).pid
+    #
+    # fpid = open("/tmp/mplayer-id", "w+")
+    # fpid.write(str(pid))
+    # fpid.close()
+    #
+    # print("pid: " + str(pid))
 
 
 if __name__ == "__main__":
