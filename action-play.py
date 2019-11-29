@@ -21,20 +21,24 @@ def read_configuration_file(configuration_file):
     try:
         with io.open(configuration_file, encoding=CONFIGURATION_ENCODING_FORMAT) as f:
             conf_parser = SnipsConfigParser()
-            conf_parser.readfp(f)
+            conf_parser.read_file(f)
             return conf_parser.to_dict()
     except (IOError, configparser.Error) as e:
         return dict()
 
 
-def subscribe_intent_callback(hermes, intent_message):
+def subscribe_intent_callback(hermes, intentMessage):
     conf = read_configuration_file(CONFIG_INI)
-    action_wrapper(hermes, intent_message, conf)
+
+    if intentMessage.asr_confidence < conf['global']['confidence_threshold']:
+        hermes.publish_end_session(intentMessage.session_id)
+    else:
+        action_wrapper(hermes, intentMessage, conf)
 
 
-def action_wrapper(hermes, intent_message, conf):
+def action_wrapper(hermes, intentMessage, conf):
 
-    hermes.publish_end_session(intent_message.session_id, "")
+    hermes.publish_end_session(intentMessage.session_id, "")
 
     subprocess.Popen(['amixer', '-c', '1', 'sset', '"PCM"', '50%'])
 
